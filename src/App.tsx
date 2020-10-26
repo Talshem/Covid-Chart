@@ -3,6 +3,7 @@ import logo from './logo.svg';
 import './App.css';
 import axios from 'axios'
 import Chart from './Components/Chart'
+import AnotherChart from './Components/AnotherChart';
 
 const App : React.FC = () => {
 const [chartHeaders, setChartHeaders] = useState([])
@@ -87,6 +88,7 @@ label={e['Province/State'] ? e['Province/State'] + ', ' + e['Country/Region'] : 
 })}
   </select>
 <Chart firstCountry={firstCountry} secondCountry={secondCountry}/>
+<AnotherChart/>
 </div>
   );
   
