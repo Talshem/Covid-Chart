@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import logo from './logo.svg';
 import axios from 'axios'
-import {CartesianGrid, BarChart, YAxis, XAxis,Bar, Tooltip, Legend } from 'recharts';
+import {Text, CartesianGrid, BarChart, YAxis, XAxis,Bar, Tooltip, Legend } from 'recharts';
+import { Button, Select } from './Styles'
 
 const AnotherChart : React.FC = () => {
 const [chartData, setChartData] = useState<any>([])
@@ -18,7 +19,9 @@ setChartData(data["Countries"])
 
   return (
 <div>
-      <select
+<h1>Get all kind of information!</h1>
+      <Select
+  background='#cdcaf8'
   id="first"
   name="First Country"
   onChange={(event) => setSortBy(event.target.value)}>
@@ -29,26 +32,27 @@ setChartData(data["Countries"])
  <option value='TotalDeaths' label='Total Deaths'/>
  <option value='NewRecovered' label='New Recovered'/>
  <option value='TotalRecovered' label='Total Recovered'/>
-  </select>
-<br/>
-<button style={{marginRight:'5px'}} onClick={() => setPage(page > 0 ? page - 10 : 0)}>Back</button>
-
-{chartData.slice(0, chartData.length/10 + 1).map((e: any) => {
-return (
-<button style={{marginRight:'5px', border:'1px solid black', background:chartData.indexOf(e) * 10 === page ? 'grey' : 'white'}} onClick={() => setPage(chartData.indexOf(e) * 10)}>{chartData.indexOf(e) * 10}</button>
-)
-})}
-<button onClick={() => setPage(page + 10 < chartData.length ? page + 10 : chartData.length - 10)}>Next</button>
-
+  </Select>
+<br/> <br/> <br/>
   <BarChart width={1000} height={500} data={chartData.slice(page, page + 10)}>
-    <XAxis dataKey={"Country"} />
-    <YAxis />
+    <XAxis allowDataOverflow={true} tickFormatter={val => val.substr(0, 11)} dataKey={"Country"} />
+    <YAxis tickFormatter={val => val/1000 + 'K'} />
     <Tooltip />
-    <CartesianGrid strokeDasharray="3 3" />
-    <Legend verticalAlign="bottom" height={50} />
+    <CartesianGrid strokeDasharray="3, 3" />
     <Bar dataKey={sortBy} barSize={30} fill="#8884d8"
       />
   </BarChart>
+ <br/>
+<div style={{width:'1200px'}}>
+<Button style={{marginRight:'5px'}} onClick={() => setPage(page > 0 ? page - 10 : 0)}>Back</Button>
+{chartData.slice(0, chartData.length/10 + 1).map((e: any) => {
+return (
+<Button focus={chartData.indexOf(e) * 10 === page} onClick={() => setPage(chartData.indexOf(e) * 10)}>{chartData.indexOf(e)}</Button>
+)
+})}
+<Button onClick={() => setPage(page + 10 < chartData.length ? page + 10 : chartData.length - 9)}>Next</Button>
+</div>
+
 </div>
   );
   

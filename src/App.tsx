@@ -1,18 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import axios from 'axios'
-import Chart from './Components/Chart'
 import AnotherChart from './Components/AnotherChart';
+const Chart = React.lazy(() => import('./Components/Chart'));
 
 const App : React.FC = () => {
-const [chartHeaders, setChartHeaders] = useState([])
-const [chartData, setChartData] = useState<any>([])
-const [firstCountry, setFirstCountry] = useState<any>('')
-const [secondCountry, setSecondCountry] = useState<any>('')
-const [compare, setComare] = useState<any>([])
-
-
+const [chartData, setChartData] = useState<any>(undefined)
 
 useEffect(() => {
 const fetchData = async () => {
@@ -23,7 +17,6 @@ let arrayData = data
 .replace('"Korea, South"', 'South Korea')
 .replace(/\r?\n|\r/g, ',')
 .split(',')
-setChartHeaders(arrayData.slice(0,arrayData.indexOf('Afghanistan')-1))
 
 for( let j=0; j <= arrayData.length; j++){
 if (!isNaN(Number(arrayData[j]))) { arrayData[j] = Number(arrayData[j])}
@@ -47,47 +40,14 @@ if(!isNaN(country[0])) object[arrayData.slice(0,arrayData.indexOf('Afghanistan')
 arrayCountriesData.push(object)
 }
 setChartData(arrayCountriesData)
-setFirstCountry(arrayCountriesData[0])
-setSecondCountry(arrayCountriesData[1])
 }; fetchData();
 }, [])
 
   return (
-<div>
-  <select
-  value={firstCountry['Province/State'] ? firstCountry['Province/State'] : firstCountry['Country/Region']}
-  id="first"
-  name="First Country"
-  onChange={(event) => setFirstCountry(chartData.find((country: { [x: string]: any; }) => country['Province/State'] === event.target.value || country['Country/Region'] === event.target.value))}
-  >
-{chartData.map((e: { [x: string]: any; }) => {
-return (
-<option
-value={e['Province/State'] ? e['Province/State'] : e['Country/Region']}
-label={e['Province/State'] ? e['Province/State'] + ', ' + e['Country/Region'] : e['Country/Region'] }
-/>
-)
-})}
-  </select>
-
-    <select
-    value={secondCountry['Province/State'] ? secondCountry['Province/State'] : secondCountry['Country/Region']}
-    id="second"
-    name="Second Country"
-    onChange={(event) => setSecondCountry(chartData.find((country: { [x: string]: any; }) => country['Province/State'] === event.target.value || country['Country/Region'] === event.target.value))}
-    >
-{chartData.map((e: { [x: string]: any; })  => {
-return (
-<option
-onChange={() => setSecondCountry(chartData.find((country: { [x: string]: any; }) => country['Province/State'] ? country['Province/State'] === e['Province/State'] : country['Country/Region'] === e['Country/Region']))}
-value={e['Province/State'] ? e['Province/State'] : e['Country/Region']}
-label={e['Province/State'] ? e['Province/State'] + ', ' + e['Country/Region'] : e['Country/Region'] }
-/>
-
-)
-})}
-  </select>
-<Chart firstCountry={firstCountry} secondCountry={secondCountry}/>
+<div style={{margin:'5%'}}>
+  <Suspense fallback={<div>Loading Chart...</div>}>
+{chartData && <Chart chartData={chartData}/>}
+  </Suspense>
 <AnotherChart/>
 </div>
   );
